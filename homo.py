@@ -3,14 +3,14 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-im1 = cv2.imread('./2019/0520/ab.png',0) # queryImage
-im2 = cv2.imread('./2019/0520/aa.png',0) # trainImage
+im1 = cv2.imread('./Image1.png',0) # queryImage
+im2 = cv2.imread('./Image2.png',0) # trainImage
 
 def alignImages(img1, img2,
                 max_pts, good_match_rate, min_match):
     # https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_feature_homography/py_feature_homography.html#feature-homography
 
-    # [1] ORBを用いて特徴量を検出する
+    # [1] Detect feature quantity using ORB
     # Initiate ORB detector
     orb = cv2.ORB_create(max_pts)
     # find the keypoints and descriptors with SIFT
@@ -18,7 +18,7 @@ def alignImages(img1, img2,
     kp2, des2 = orb.detectAndCompute(img2,None)
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
-    # [2] 検出した特徴量の比較をしてマッチングをする
+    # [2] Perform matching by comparing detected feature quantities
     # Match descriptors.
     matches = bf.match(des1, des2)
 
@@ -26,7 +26,7 @@ def alignImages(img1, img2,
     matches = sorted(matches, key=lambda x: x.distance)
     good = matches[:int(len(matches) * good_match_rate)]
 
-    # [3] 十分な特徴量が集まったらそれを使って入力画像を変形する
+    # [3] When sufficient features are gathered, use it to transform the input image
     if len(good) > min_match:
         src_pts = np.float32(
             [kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
